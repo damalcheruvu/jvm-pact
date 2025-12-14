@@ -40,21 +40,17 @@ jvm-pact/
 This framework supports **both** file-based (simple) and broker-based (advanced) workflows:
 
 ```mermaid
-graph TB
-    subgraph one["File-Based: Simple"]
-        C1[Consumer Tests] -->|generates| F1[Pact JSON Files]
-        F1 -->|reads| P1[Provider Tests]
-    end
+graph LR
+    A1["📝 Consumer"] -->|generates| B1["📄 JSON Files"]
+    B1 -->|reads| C1["✅ Provider"]
     
-    subgraph two["Broker-Based: Advanced"]
-        C2[Consumer Tests] -->|publishes| B[Pact Broker]
-        B -->|loads| P2[Provider Tests]
-        B -.->|Web UI| UI[Dashboard]
-    end
+    A2["📝 Consumer"] -->|publishes| B2["🌐 Pact Broker"]
+    B2 -->|loads| C2["✅ Provider"]
+    B2 -.-> D2["📊 Dashboard"]
     
-    style F1 stroke:#1976d2,stroke-width:3px
-    style B stroke:#f57c00,stroke-width:3px
-    style UI stroke:#f57c00,stroke-width:2px
+    style B1 stroke:#1976d2,stroke-width:4px
+    style B2 stroke:#f57c00,stroke-width:4px
+    style D2 stroke:#f57c00,stroke-width:3px
 ```
 
 **When to Use Each:**

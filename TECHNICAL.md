@@ -770,26 +770,21 @@ steps:
 ### Comparison: File-Based vs Broker
 
 ```mermaid
-graph TB
-    subgraph file["File-Based Workflow"]
-        FC[Consumer<br/>mvn test] --> FJ[JSON Files<br/>target/pacts]
-        FJ --> FP[Provider<br/>mvn test]
-        FP --> FR[Results<br/>Terminal]
-    end
+graph LR
+    F1["Consumer<br/>mvn test"] --> F2["JSON Files<br/>target/pacts"]
+    F2 --> F3["Provider<br/>mvn test"]
+    F3 --> F4["✅ Pass/Fail"]
     
-    subgraph broker["Broker Workflow"]
-        BC[Consumer<br/>mvn test] --> BB[Pact Broker<br/>localhost:9292]
-        BB --> BP[Provider<br/>mvn test]
-        BP -.results.-> BB
-        BB -.->BU[Web UI]
-        BB -.->BG[can-i-deploy]
-    end
+    B1["Consumer<br/>mvn test"] --> B2["Pact Broker<br/>:9292"]
+    B2 --> B3["Provider<br/>mvn test"]
+    B2 -.-> B4["📊 Web UI"]
+    B2 -.-> B5["🚦 Gates"]
     
-    style FJ stroke:#1976d2,stroke-width:3px
-    style FR stroke:#43a047,stroke-width:2px
-    style BB stroke:#f57c00,stroke-width:3px
-    style BU stroke:#f57c00,stroke-width:2px
-    style BG stroke:#7b1fa2,stroke-width:2px
+    style F2 stroke:#1976d2,stroke-width:4px
+    style F4 stroke:#43a047,stroke-width:3px
+    style B2 stroke:#f57c00,stroke-width:4px
+    style B4 stroke:#f57c00,stroke-width:3px
+    style B5 stroke:#7b1fa2,stroke-width:3px
 ```
 
 | Feature | File-Based (@PactFolder) | Broker (@PactBroker) |
