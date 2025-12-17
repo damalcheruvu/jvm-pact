@@ -1,17 +1,10 @@
 # Pact Contract Testing Framework
 
-Production-ready consumer-driven contract testing implementation using Pact JVM with JUnit 5, Rest Assured, and Lombok.
+Consumer-driven contract testing using Pact JVM with JUnit 5, Rest Assured, and Lombok.
 
 **What is Pact?** Contract testing framework that verifies API compatibility between consumer and provider services without end-to-end integration tests.
 
-**What's Included:**
-- Complete consumer + provider test examples
-- JSONPlaceholder API integration (free test API)
-- HTML dashboard for contract visualization
-- Compatible package versions for Java 17
-- Jenkins + Drone CI/CD examples
-
-📖 **[Read Technical Documentation](TECHNICAL.md)** - Detailed guide with Mermaid diagrams
+📖 **[Technical Documentation](TECHNICAL.md)** - Deep dive with code examples and diagrams
 
 ## Project Structure
 
@@ -205,13 +198,10 @@ steps:
 
 ## Pact Broker Setup (Optional)
 
-**What is Pact Broker?** Central repository for storing and sharing Pact contracts across teams. Provides versioning, can-i-deploy checks, and automated provider verification.
-
 **When to Use:**
-- ✅ Multiple teams/services need shared contracts
-- ✅ Need deployment gates (can-i-deploy)
-- ✅ Want automated provider verification
-- ❌ Single team prototyping (file-based is simpler)
+- Multiple teams/services need shared contracts
+- Need deployment gates (can-i-deploy)
+- Want automated provider verification
 
 ### Quick Start
 
@@ -261,36 +251,7 @@ mvn test -Dtest=UserServiceProviderPactBrokerTest
 - `UserServiceProviderPactTest` - Uses @PactFolder (file-based)
 - `UserServiceProviderPactBrokerTest` - Uses @PactBroker (broker-based)
 
-### CI/CD with Broker
-
-**Jenkins Example:**
-```groovy
-stage('Publish to Broker') {
-    steps {
-        sh 'cd consumer && mvn pact:publish'
-    }
-}
-
-stage('Can I Deploy?') {
-    steps {
-        sh '''
-            docker run --rm --network=host \
-            pactfoundation/pact-cli:latest \
-            broker can-i-deploy \
-            --pacticipant=UserServiceConsumer \
-            --version=${GIT_COMMIT} \
-            --to=production \
-            --broker-base-url=http://localhost:9292
-        '''
-    }
-}
-```
-
-**Benefits:**
-- Version tracking across environments
-- Deployment gates prevent breaking changes
-- Webhooks trigger provider tests automatically
-- Team collaboration via web UI
+**See [TECHNICAL.md](TECHNICAL.md#upgrading-to-pact-broker)** for CI/CD examples and advanced broker features.
 
 ## Troubleshooting
 
@@ -314,16 +275,8 @@ mvn test -Dpact.showStacktrace=true  # Pact details
 
 ## Resources
 
-- [Pact Official Docs](https://docs.pact.io/)
-- [Pact JVM GitHub](https://github.com/pact-foundation/pact-jvm)
+- [Pact Docs](https://docs.pact.io/)
+- [Pact JVM](https://github.com/pact-foundation/pact-jvm)
 - [Rest Assured](https://rest-assured.io/)
 - [Lombok](https://projectlombok.org/)
-- [Contract Testing Guide](https://martinfowler.com/articles/consumerDrivenContracts.html)
-
-## Support
-
-For issues or questions:
-1. Check the Troubleshooting section
-2. Review Pact documentation at https://docs.pact.io/
-3. Open an issue in this repository
 
