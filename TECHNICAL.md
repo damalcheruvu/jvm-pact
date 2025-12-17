@@ -200,8 +200,6 @@ public class User {
 }
 ```
 
-Without Lombok, this would be 70+ lines of boilerplate code.
-
 ### HTTP Client (Consumer)
 
 Rest Assured client with Lombok logging:
@@ -360,27 +358,6 @@ public class UserServiceProviderPactTest {
 | Surefire | 3.2.5 | Matches JUnit 5.10.3 |
 | Java | 17 LTS | Stable, full tooling support |
 
-### Logging Configuration
-
-Logback configured to reduce noise:
-
-```xml
-<configuration>
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>
-        </encoder>
-    </appender>
-    
-    <logger name="au.com.dius.pact" level="INFO"/>
-    <logger name="org.apache.http" level="WARN"/>
-    
-    <root level="INFO">
-        <appender-ref ref="STDOUT"/>
-    </root>
-</configuration>
-```
-
 ## Troubleshooting
 
 ### Common Issues
@@ -450,20 +427,17 @@ cat consumer/target/pacts/*.json | jq .
 ## Scaling to Production
 
 **Small Teams (1-10 services):**
-- Commit Pact JSON to Git
-- Use HTML dashboard
-- Manual coordination
+- File-based approach with Git
+- HTML dashboard
 
 **Medium Teams (10-50 services):**
-- Add Pact Broker (self-hosted)
-- Central contract repository
-- Automated provider tests via webhooks
-- Can-I-Deploy compatibility checks
+- Self-hosted Pact Broker
+- Automated provider tests
+- Can-I-Deploy checks
 
 **Large Teams (50+ services):**
-- Use PactFlow (hosted Pact Broker)
-- Bi-directional contracts
-- Enterprise support and analytics
+- PactFlow (hosted Pact Broker)
+- Enterprise features
 
 ## Upgrading to Pact Broker
 
@@ -509,29 +483,10 @@ sequenceDiagram
 **1. Start Pact Broker**
 
 ```bash
-# Already included in this framework
 docker-compose up -d
 
 # Verify
 curl http://localhost:9292/diagnostic/status/heartbeat
-```
-
-**docker-compose.yml** (already created):
-```yaml
-services:
-  postgres:
-    image: postgres:15-alpine
-    environment:
-      POSTGRES_USER: pact
-      POSTGRES_PASSWORD: pact
-      POSTGRES_DB: pact_broker
-  
-  pact-broker:
-    image: pactfoundation/pact-broker:latest
-    depends_on:
-      - postgres
-    ports:
-      - "9292:9292"
 ```
 
 **2. Configure Maven Plugin**
@@ -558,17 +513,8 @@ Already added to `consumer/pom.xml`:
 
 ```bash
 cd consumer
-mvn clean test    # Generate contracts
-mvn pact:publish  # Upload to broker
-
-# Verify in browser
-open http://localhost:9292
-```
-
-**Output:**
-```
-Publishing UserServiceConsumer/UserServiceProvider pact to Pact Broker
-Successfully published pact: 1.0.0-SNAPSHOT
+mvn clean test
+mvn pact:publish
 ```
 
 **4. Update Provider Tests**
@@ -614,16 +560,7 @@ cd provider
 mvn test -Dtest=UserServiceProviderPactBrokerTest
 ```
 
-**Expected Output:**
-```
-Verifying pact between UserServiceConsumer (1.0.0-SNAPSHOT) and UserServiceProvider
-  [OK] a request to get all users
-  [OK] a request to get user with id 10
-  [OK] a request for non-existent user
-  [OK] a request when no users exist
-```
-
-**6. Add Can-I-Deploy Check**
+**6. Can-I-Deploy Check**
 
 ```bash
 # Check if consumer can be deployed to production
@@ -841,24 +778,21 @@ mvn pact:publish  # If provider also publishes verification results
 
 ### Production Considerations
 
-**Self-Hosted Pact Broker:**
+**Self-Hosted:**
 - Use Kubernetes or ECS for high availability
 - Add authentication (PACT_BROKER_BASIC_AUTH)
-- Enable SSL/TLS (PACT_BROKER_BASE_URL=https://...)
+- Enable SSL/TLS
 - Regular Postgres backups
 
 **PactFlow (Commercial):**
-- Hosted solution, no infrastructure
-- Advanced analytics and insights
-- Bi-directional contract testing
+- Hosted solution
+- Advanced analytics
 - Enterprise support
-- Pricing: ~$10/user/month
 
 **Best Practices:**
 - Use Git commit SHA as version number
-- Tag versions by environment (dev, staging, prod)
+- Tag versions by environment
 - Set up webhooks for automatic provider verification
 - Use can-i-deploy in CI/CD before deployment
-- Monitor broker health and database size
 
 
